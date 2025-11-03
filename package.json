@@ -7,9 +7,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-     "start": "NODE_ENV=production node ./dist/server/entry.mjs"
+    "start": "NODE_ENV=production node ./dist/server/entry.mjs"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.0",
     "astro": "^5.15.3"
   }
 }
