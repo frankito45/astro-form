@@ -10,14 +10,25 @@
   class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md space-y-4"
   >
   <div id="error-container"></div>
-  <!-- Mantén el resto del HTML del formulario igual -->
+  
   <h2 class="text-2xl font-bold text-center text-gray-700">Formulario de Pedido</h2>
   
+  <div class="grid grid-cols-2 gap-3">
+  <div class="">
+    <label class="block  text-gray-600 mb-1" for="opciones" >Local</label>
+    <select id="opciones" name="opciones" class="p-2 font-semibold focus:ring-blue-500 focus:border-blue-500 border border-gray-300 rounded-md w-full ">
+      <option value="Local Guernica">Local Guernica</option>
+      <option value="Central Glew">Central Glew</option>
+    </select>
+  </div>
   <div>
-    <label class="block text-gray-600 mb-1" for="opciones" >Local</label>
-    <select id="opciones" name="opciones">
-      <option value="opcion1">Local Guernica</option>
-      <option value="opcion2">Central Glew</option>
+    <label class="block text-gray-600 mb-1" for="estado" >estado</label>
+    <select id="estado" name="estado" class="p-2 font-semibold focus:ring-blue-500 focus:border-blue-500 border border-gray-300 rounded-md w-full ">
+      <option value="Inicio">Inicio</option>
+      <option value="Produccoin">Produccion</option>
+      <option value="Envio">Envio</option>
+      <option value="Ingreso">Ingreso</option>
+      <option value="Final">Final</option>
     </select>
   </div>
   
@@ -26,34 +37,33 @@
     <input type="text" name="fecha" id="fecha" required readonly class="w-full border rounded-lg p-2 bg-gray-100">
   </div>
   
-  <div class="grid grid-cols-2 gap-3">
     <div>
       <label class="block text-gray-600 mb-1">Pollo</label>
-      <input type="number" name="pollo" class="w-full border rounded-lg p-2">
+      <input type="text" name="pollo" class="w-full border rounded-lg p-2">
     </div>
     <div>
       <label class="block text-gray-600 mb-1">Milanesa</label>
-      <input type="number" name="mila" class="w-full border rounded-lg p-2">
+      <input type="text" name="mila" class="w-full border rounded-lg p-2">
     </div>
     <div>
       <label class="block text-gray-600 mb-1">Pata</label>
-      <input type="number" name="pata" class="w-full border rounded-lg p-2">
+      <input type="text" name="pata" class="w-full border rounded-lg p-2">
     </div>
     <div>
       <label class="block text-gray-600 mb-1">Alita</label>
-      <input type="number" name="alita" class="w-full border rounded-lg p-2">
+      <input type="text" name="alita" class="w-full border rounded-lg p-2">
     </div>
     <div>
       <label class="block text-gray-600 mb-1">Suprema</label>
-      <input type="number" name="suprema" class="w-full border rounded-lg p-2">
+      <input type="text" name="suprema" class="w-full border rounded-lg p-2">
     </div>
     <div>
       <label class="block text-gray-600 mb-1">Menudo</label>
-      <input type="number" name="menudo" class="w-full border rounded-lg p-2">
+      <input type="text" name="menudo" class="w-full border rounded-lg p-2">
     </div>
-    <div class="col-span-2">
+    <div class="">
       <label class="block text-gray-600 mb-1">Rebosador</label>
-      <input type="number" name="rebosador" class="w-full border rounded-lg p-2">
+      <input type="text" name="rebosador" class="w-full border rounded-lg p-2">
     </div>
   </div>
   
@@ -84,6 +94,7 @@
             
             const data = {
                 local: formData.get('opciones'),
+                estado: formData.get('estado'),
                 fecha: formData.get('fecha'),
                 pollo: Number(formData.get('pollo') || 0),
                 mila: Number(formData.get('mila') || 0),
