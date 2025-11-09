@@ -1,0 +1,158 @@
+
+<script>
+    // Establecer fecha actual automáticamente
+    const fechaInput = document.getElementById('fecha') as HTMLInputElement;
+    if (fechaInput) {
+        const hoy = new Date();
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const año = hoy.getFullYear();
+        fechaInput.value = `${dia}/${mes}/${año}`;
+    }
+
+    // Manejar envío del formulario
+    const form = document.getElementById('pedidoForm');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target as HTMLFormElement);
+            
+            const data = {
+                grupo: "Limpieza",
+                local: formData.get('opciones'),
+                estado: formData.get('estado'),
+                fecha: formData.get('fecha'),
+                cloro: Number(formData.get('cloro') || 0),
+                regilla: Number(formData.get('regilla') || 0),
+                esponja: Number(formData.get('esponja') || 0),
+                birulana: Number(formData.get('birulana') || 0),
+                cif: Number(formData.get('cif') || 0),
+                detergente: Number(formData.get('detergente') || 0),
+                trapo: Number(formData.get('trapo') || 0),
+            };
+
+            try {
+                const errorContainer = document.getElementById('error-container');
+                
+                // Mostrar mensaje de carga
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div class="text-blue-500">Enviando pedido...</div>';
+                }
+
+                const response = await fetch('https://web-66vzoi1semdv.up-de-fra1-k8s-1.apps.run-on-seenode.com/stock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div class="text-green-500">Pedido enviado con éxito!</div>';
+                }
+                
+                // Limpiar el formulario
+                (form as HTMLFormElement).reset();
+                
+                // Restablecer la fecha
+                if (fechaInput) {
+                    const hoy = new Date();
+                    const dia = String(hoy.getDate()).padStart(2, '0');
+                    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                    const año = hoy.getFullYear();
+                    fechaInput.value = `${dia}/${mes}/${año}`;
+                }
+            } catch (error: any) {
+                console.error('Error:', error);
+                const errorContainer = document.getElementById('error-container');
+                if (errorContainer) {
+                    errorContainer.innerHTML = `<div class="text-red-500">Error al enviar el pedido: ${error.message || 'Error desconocido'}</div>`;
+                }
+            }
+        });
+    }
+
+</script>
+<div class=" min-h-screen flex items-center justify-center bg-stone-200 p-4">
+  <div class="relative  max-w-2xl ">
+    <div class="absolute -top-6 ">
+      <button class="bg-[#CFC0AB] px-5 py-1 pb-10 rounded-md flex space-x-4"><a href="/pollo" class="font-semibold ">Pollo</a></button>
+    </div>
+    <div class="absolute -top-6 left-20">
+      <button class="bg-[#869F99] px-5 py-1 pb-10 rounded-md flex space-x-4"><a href="/cerdo" class="font-semibold ">cerdo</a></button>
+    </div>
+    <div class="absolute -top-6 right-0">
+      <button class=" bg-[#a9b199] px-5 py-1 pb-10 rounded-md flex space-x-4"><a href="/limpieza" class="font-semibold ">otros</a></button>
+    </div>
+    <form 
+    id="pedidoForm" 
+    class="relative bg-[#a9b199] p-8 rounded-2xl shadow-lg w-full max-w-md space-y-4"
+    >
+    <div id="error-container"></div>
+    
+    <h2 class="text-2xl font-bold text-center text-gray-700">Formulario de Stock</h2>
+    
+    <div class="grid grid-cols-2 gap-3">
+      <div class="">
+        <label class="block  text-gray-600 mb-1" for="opciones" >Local</label>
+        <select id="opciones" name="opciones" class="p-2 font-semibold bg-white focus:ring-blue-500 focus:border-blue-500 border border-gray-300 rounded-md w-full ">
+          <option value="Local Guernica">Local Guernica</option>
+          <option value="Central Glew">Central Glew</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1" for="estado" >estado</label>
+        <select id="estado" name="estado" class="p-2  font-semibold bg-white focus:ring-blue-500 focus:border-blue-500 border border-gray-300 rounded-md w-full ">
+          <option value="stock">stock</option>
+          <option value="Envio">Envio</option>
+          <option value="Ingreso">Ingreso</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-gray-600 mb-1">Fecha</label>
+        <input type="text" name="fecha" id="fecha" required readonly class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Cloro</label>
+        <input type="text" name="cloro" class="w-full border rounded-lg p-2 bg-white ">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Regilla</label>
+        <input type="text" name="regilla" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Esponja</label>
+        <input type="text" name="esponja" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Birulana</label>
+        <input type="text" name="birulana" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Cif</label>
+        <input type="text" name="cif" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div>
+        <label class="block text-gray-600 mb-1">Detergente</label>
+        <input type="text" name="detergente" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+      <div class="">
+        <label class="block text-gray-600 mb-1">Trapo de piso</label>
+        <input type="text" name="trapo" class="w-full border rounded-lg p-2 bg-white">
+      </div>
+    </div>
+    
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+      Enviar Pedido
+    </button>
+  </form>
+</div>
+

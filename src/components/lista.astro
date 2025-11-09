@@ -1,3 +1,81 @@
 ---
+
+import Layout from "../layouts/Layout.astro";
+
+
+
+const data = await fetch('https://web-66vzoi1semdv.up-de-fra1-k8s-1.apps.run-on-seenode.com/stock')
+const dataParse = await data.json() 
+const estados = ["Inicio", "Produccoin", "Envio", "Final"];
+
 ---
 
+
+<div class="mb-4">
+  <label class="font-semibold mr-2">Filtrar por estado:</label>
+  <select id="filtro-estado" class="border px-2 py-1 rounded">
+    <option value="">Todos</option>
+    {estados.map(e => (
+      <option value={e}>{e}</option>
+    ))}
+  </select>
+</div>
+
+<div class="overflow-x-auto">
+  <table id="tabla-datos" class="min-w-full border border-gray-300 text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="border px-3 py-2">ID</th>
+        <th class="border px-3 py-2">Local</th>
+        <th class="border px-3 py-2">Estado</th>
+        <th class="border px-3 py-2">Fecha</th>
+        <th class="border px-3 py-2">Pollo</th>
+        <th class="border px-3 py-2">Mila</th>
+        <th class="border px-3 py-2">Pata</th>
+        <th class="border px-3 py-2">Alita</th>
+        <th class="border px-3 py-2">Suprema</th>
+        <th class="border px-3 py-2">Menudo</th>
+        <th class="border px-3 py-2">Rebosador</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {dataParse.map((item) => (
+        <tr
+          class="hover:bg-gray-50"
+          data-estado={item.estado || ""}
+        >
+          <td class="border px-3 py-2">{item.id}</td>
+          <td class="border px-3 py-2">{item.local}</td>
+          <td class="border px-3 py-2">{item.estado || "-"}</td>
+          <td class="border px-3 py-2">{item.fecha}</td>
+          <td class="border px-3 py-2">{item.pollo ?? "-"}</td>
+          <td class="border px-3 py-2">{item.mila ?? "-"}</td>
+          <td class="border px-3 py-2">{item.pata ?? "-"}</td>
+          <td class="border px-3 py-2">{item.alita ?? "-"}</td>
+          <td class="border px-3 py-2">{item.suprema ?? "-"}</td>
+          <td class="border px-3 py-2">{item.menudo ?? "-"}</td>
+          <td class="border px-3 py-2">{item.rebosador ?? "-"}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const filtro = document.getElementById("filtro-estado");
+  const filas = document.querySelectorAll("#tabla-datos tbody tr");
+
+  filtro.addEventListener("change", () => {
+    const estadoSeleccionado = filtro.value;
+
+    filas.forEach((fila) => {
+      const estado = fila.dataset.estado || "";
+      if (!estadoSeleccionado || estado === estadoSeleccionado) {
+        fila.style.display = "";
+      } else {
+        fila.style.display = "none";
+      }
+    });
+  });
+</script>
