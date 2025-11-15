@@ -1,81 +1,109 @@
 ---
-
 import Layout from "../layouts/Layout.astro";
 
-
-
-const data = await fetch('https://web-66vzoi1semdv.up-de-fra1-k8s-1.apps.run-on-seenode.com/stock')
-const dataParse = await data.json() 
-const estados = ["Inicio", "Produccoin", "Envio", "Final"];
+const {estados,grupos,dataParse } = Astro.props;
 
 ---
 
+<div class="mb-4 flex flex-wrap gap-4">
 
-<div class="mb-4">
-  <label class="font-semibold mr-2">Filtrar por estado:</label>
-  <select id="filtro-estado" class="border px-2 py-1 rounded">
-    <option value="">Todos</option>
-    {estados.map(e => (
-      <option value={e}>{e}</option>
-    ))}
-  </select>
+  <div>
+    <label class="font-semibold mr-2">Estado:</label>
+    <select id="filtro-estado" class="border px-2 py-1 rounded">
+      <option value="">Todos</option>
+      {estados.map((e) => (
+        <option value={e}>{e}</option>
+      ))}
+    </select>
+  </div>
+
+  <div>
+    <label class="font-semibold mr-2">Grupo:</label>
+    <select id="filtro-grupo" class="border px-2 py-1 rounded">
+      <option value="">Todos</option>
+      {grupos.map((g) => (
+        <option value={g}>{g}</option>
+      ))}
+    </select>
+  </div>
+
+  <div>
+    <label class="font-semibold mr-2">Fecha:</label>
+    <input type="date" id="filtro-fecha" class="border px-2 py-1 rounded" />
+  </div>
+
 </div>
 
-<div class="overflow-x-auto">
-  <table id="tabla-datos" class="min-w-full border border-gray-300 text-sm">
-    <thead class="bg-gray-100">
-      <tr>
-        <th class="border px-3 py-2">ID</th>
-        <th class="border px-3 py-2">Local</th>
-        <th class="border px-3 py-2">Estado</th>
-        <th class="border px-3 py-2">Fecha</th>
-        <th class="border px-3 py-2">Pollo</th>
-        <th class="border px-3 py-2">Mila</th>
-        <th class="border px-3 py-2">Pata</th>
-        <th class="border px-3 py-2">Alita</th>
-        <th class="border px-3 py-2">Suprema</th>
-        <th class="border px-3 py-2">Menudo</th>
-        <th class="border px-3 py-2">Rebosador</th>
-      </tr>
-    </thead>
 
-    <tbody>
-      {dataParse.map((item) => (
-        <tr
-          class="hover:bg-gray-50"
-          data-estado={item.estado || ""}
-        >
-          <td class="border px-3 py-2">{item.id}</td>
-          <td class="border px-3 py-2">{item.local}</td>
-          <td class="border px-3 py-2">{item.estado || "-"}</td>
-          <td class="border px-3 py-2">{item.fecha}</td>
-          <td class="border px-3 py-2">{item.pollo ?? "-"}</td>
-          <td class="border px-3 py-2">{item.mila ?? "-"}</td>
-          <td class="border px-3 py-2">{item.pata ?? "-"}</td>
-          <td class="border px-3 py-2">{item.alita ?? "-"}</td>
-          <td class="border px-3 py-2">{item.suprema ?? "-"}</td>
-          <td class="border px-3 py-2">{item.menudo ?? "-"}</td>
-          <td class="border px-3 py-2">{item.rebosador ?? "-"}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+<!-- ================= CARDS =================== -->
+<div id="card" class=" grid-cols-1 gap-4 p-2 ">
+  {dataParse.map((data) => (
+    <div class="w-auto bg-white border border-gray-200 shadow rounded-xl p-4 flex items-center justify-around" data-grupo={data.grupo} data-estado={data.estado} data-fecha={data.fecha}>
+      <header class="mb-3">
+        <h2 class="text-xl font-bold text-gray-800">{data.grupo}</h2>
+        <p class="text-sm text-gray-600"><strong>Local:</strong> {data.local}</p>
+        <p class="text-sm text-gray-600"><strong>Estado:</strong> {data.estado}</p>
+        <p class="text-sm text-gray-600"><strong>Fecha:</strong> {data.fecha}</p>
+      </header>
+
+      <ul class="space-y-1  ">
+        {Object.entries(data)
+          .filter(([key]) => !["id", "local", "estado", "fecha", "grupo"].includes(key))
+          .map(([key, value]) => (
+            <li class="text-sm text-gray-700">
+              <span class="font-semibold">{key}:</span> {value}
+            </li>
+          ))}
+      </ul>
+    </div>
+  ))}
 </div>
 
 <script>
-  const filtro = document.getElementById("filtro-estado");
-  const filas = document.querySelectorAll("#tabla-datos tbody tr");
+  const tablaContainer = document.getElementById("tabla-container");
+  const cardContainer = document.getElementById("card");
 
-  filtro.addEventListener("change", () => {
-    const estadoSeleccionado = filtro.value;
+  const fEstado = document.getElementById("filtro-estado");
+  const fGrupo = document.getElementById("filtro-grupo");
+  const fFecha = document.getElementById("filtro-fecha");
 
-    filas.forEach((fila) => {
-      const estado = fila.dataset.estado || "";
-      if (!estadoSeleccionado || estado === estadoSeleccionado) {
-        fila.style.display = "";
-      } else {
-        fila.style.display = "none";
-      }
+  // Convertir fecha input yyyy-mm-dd → dd/mm/yyyy
+  function convertirFecha(iso) {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function ajustarVista() {
+    if (window.innerWidth < 769) {
+      tablaContainer.style.display = "none";
+      cardContainer.style.display = "grid";
+    } else {
+      tablaContainer.style.display = "block";
+      cardContainer.style.display = "none";
+    }
+  }
+
+  window.addEventListener("load", ajustarVista);
+  window.addEventListener("resize", ajustarVista);
+
+  function aplicarFiltros() {
+    const estado = fEstado.value;
+    const grupo = fGrupo.value;
+    const fecha = convertirFecha(fFecha.value);
+
+
+    // CARDS
+    document.querySelectorAll("#card > div").forEach((card) => {
+      const okEstado = !estado || card.dataset.estado === estado;
+      const okGrupo = !grupo || card.dataset.grupo === grupo;
+      const okFecha = !fecha || card.dataset.fecha === fecha;
+
+      card.style.display = okEstado && okGrupo && okFecha ? "" : "none";
     });
-  });
+  }
+
+  fEstado.addEventListener("change", aplicarFiltros);
+  fGrupo.addEventListener("change", aplicarFiltros);
+  fFecha.addEventListener("change", aplicarFiltros);
 </script>
